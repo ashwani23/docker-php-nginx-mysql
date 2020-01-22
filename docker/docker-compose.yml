@@ -1,0 +1,103 @@
+version: "3"
+services:
+  #PHP Service
+  app-staging:
+    build:
+      context: ../api/staging
+      dockerfile: Dockerfile
+    image: keptey/php-7.2
+    container_name: app-staging
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app-staging
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ../api/staging:/var/www/api/staging
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  #PHP Service
+  app-develop:
+    build:
+      context: ../api/develop
+      dockerfile: Dockerfile
+    image: keptey/php-7.2
+    container_name: app-develop
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app-develop
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ../api/develop:/var/www/api/develop
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  #PHP Service
+  app-production:
+    build:
+      context: ../api/production
+      dockerfile: Dockerfile
+    image: keptey/php-7.2
+    container_name: app-production
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app-production
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ../api/production:/var/www/api/production
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../api/staging:/var/www/api/staging
+      - ../api/develop:/var/www/api/develop
+      - ../api/production:/var/www/api/production
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  #MySQL Service
+  db:
+    image: mysql:5.7.22
+    container_name: db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: 123456
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local
