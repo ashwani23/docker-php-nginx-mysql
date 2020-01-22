@@ -43,8 +43,8 @@ COPY . /var/www/api/staging
 COPY --chown=www:www . /var/www/api/staging/
 
 # Create sub domain
-RUN cp /etc/nginx/sites-available/default /etc/nginx/sites-available/staging.api.keptey.in
-RUN ln -s /etc/nginx/sites-available/staging.api.keptey.in /etc/nginx/sites-enabled/staging.api.keptey.in
+# RUN cp /etc/nginx/sites-available/default /etc/nginx/sites-available/staging.api.keptey.in
+# RUN ln -s /etc/nginx/sites-available/staging.api.keptey.in /etc/nginx/sites-enabled/staging.api.keptey.in
 
 # Change current user to www
 USER www

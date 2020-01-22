@@ -43,8 +43,8 @@ COPY . /var/www/api/develop
 COPY --chown=www:www . /var/www/api/develop/
 
 # Create sub domain
-RUN cp /etc/nginx/sites-available/default /etc/nginx/sites-available/develop.api.keptey.in
-RUN ln -s /etc/nginx/sites-available/develop.api.keptey.in /etc/nginx/sites-enabled/develop.api.keptey.in
+# RUN cp /etc/nginx/sites-available/default /etc/nginx/sites-available/develop.api.keptey.in
+# RUN ln -s /etc/nginx/sites-available/develop.api.keptey.in /etc/nginx/sites-enabled/develop.api.keptey.in
 
 # Change current user to www
 USER www
