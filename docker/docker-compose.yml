@@ -1,76 +1,93 @@
 version: "3"
 services:
   #PHP Service
-  app-staging:
-    build:
-      context: ../api/staging
-      dockerfile: Dockerfile
-    image: keptey/php-7.2
-    container_name: app-staging
-    restart: unless-stopped
-    tty: true
-    environment:
-      SERVICE_NAME: app-staging
-      SERVICE_TAGS: dev
-    working_dir: /var/www
-    volumes:
-      - ../api/staging:/var/www/api/staging
-      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
-    networks:
-      - app-network
-
-  #PHP Service
-  app-develop:
-    build:
-      context: ../api/develop
-      dockerfile: Dockerfile
-    image: keptey/php-7.2
-    container_name: app-develop
-    restart: unless-stopped
-    tty: true
-    environment:
-      SERVICE_NAME: app-develop
-      SERVICE_TAGS: dev
-    working_dir: /var/www
-    volumes:
-      - ../api/develop:/var/www/api/develop
-      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
-    networks:
-      - app-network
-
-  #PHP Service
-  app-production:
+  api:
     build:
       context: ../api/production
       dockerfile: Dockerfile
     image: keptey/php-7.2
-    container_name: app-production
+    container_name: api
     restart: unless-stopped
     tty: true
     environment:
-      SERVICE_NAME: app-production
-      SERVICE_TAGS: dev
+      SERVICE_NAME: api
+      SERVICE_TAGS: prod
     working_dir: /var/www
     volumes:
       - ../api/production:/var/www/api/production
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    ports:
+      - 9000:9000
+    networks:
+      - app-network
+
+  #PHP Service
+  devapi:
+    build:
+      context: ../api/develop
+      dockerfile: Dockerfile
+    image: keptey/php-7.2
+    container_name: devapi
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: devapi
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ../api/develop:/var/www/api/develop
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    ports:
+      - 9001:9001
+    networks:
+      - app-network
+
+  #PHP Service
+  stageapi:
+    build:
+      context: ../api/staging
+      dockerfile: Dockerfile
+    image: keptey/php-7.2
+    container_name: stageapi
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: stageapi
+      SERVICE_TAGS: stage
+    working_dir: /var/www/api/staging
+    volumes:
+      - ../api/staging:/var/www/api/staging
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    ports:
+      - 9002:9002
     networks:
       - app-network
 
   #Nginx Service
-  webserver:
-    image: nginx:alpine
-    container_name: webserver
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: nginx:ubuntu
+    container_name: nginx
     restart: unless-stopped
     tty: true
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ../api/staging:/var/www/api/staging
-      - ../api/develop:/var/www/api/develop
-      - ../api/production:/var/www/api/production
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - "8000:80"
+      - "4430:443"
+    extra_hosts:
+     - "api.keptey.in:192.168.0.49"
+     - "devapi.keptey.in:192.168.0.49"
+     - "stageapi.keptey.in:192.168.0.49"
+    links:
+        - api
+        - devapi
+        - stageapi
+    #volumes:
+      #- ../api/staging:/var/www/api/staging
+      #- ../api/develop:/var/www/api/develop
+      #- ../api/production:/var/www/api/production
+      #- ./nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - app-network
 
@@ -81,7 +98,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: laravel
       MYSQL_ROOT_PASSWORD: 123456
