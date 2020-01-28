@@ -1,0 +1,7 @@
+server {
+    listen          80;
+    server_name     stageapi.keptey.in www.stageapi.keptey.in;
+    location / {
+        proxy_pass  http://stageapi:9002/;
+    }
+}
