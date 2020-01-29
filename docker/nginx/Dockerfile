@@ -15,14 +15,14 @@ EXPOSE 80
 EXPOSE 443
 
 # add nginx conf
-ADD config/api.keptey.in /etc/nginx/sites-available/api
-ADD config/devapi.keptey.in /etc/nginx/sites-available/devapi
-ADD config/stageapi.keptey.in /etc/nginx/sites-available/stageapi
+ADD config/api.localhost.conf /etc/nginx/sites-available/api.localhost.conf
+ADD config/devapi.localhost.conf /etc/nginx/sites-available/devapi.localhost.conf
+ADD config/stageapi.localhost.conf /etc/nginx/sites-available/stageapi.localhost.conf
 
 # create symlinks 
-RUN ln -s /etc/nginx/sites-available/api /etc/nginx/sites-enabled/
-RUN ln -s /etc/nginx/sites-available/devapi /etc/nginx/sites-enabled/
-RUN ln -s /etc/nginx/sites-available/stageapi /etc/nginx/sites-enabled/
+RUN ln -s /etc/nginx/sites-available/api.localhost.conf /etc/nginx/sites-enabled/
+RUN ln -s /etc/nginx/sites-available/devapi.localhost.conf /etc/nginx/sites-enabled/
+RUN ln -s /etc/nginx/sites-available/stageapi.localhost.conf /etc/nginx/sites-enabled/
 
 
 # add nginx conf
