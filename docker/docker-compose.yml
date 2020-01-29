@@ -1,16 +1,16 @@
 version: "3"
 services:
   #PHP Service
-  api:
+  api.localhost:
     build:
       context: ../api/production
       dockerfile: Dockerfile
-    image: keptey/php-7.2
-    container_name: api
+    image: kepteyapi/php-7.2
+    container_name: api.localhost
     restart: unless-stopped
     tty: true
     environment:
-      SERVICE_NAME: api
+      SERVICE_NAME: api.localhost
       SERVICE_TAGS: prod
     working_dir: /var/www
     volumes:
@@ -22,16 +22,16 @@ services:
       - app-network
 
   #PHP Service
-  devapi:
+  devapi.localhost:
     build:
       context: ../api/develop
       dockerfile: Dockerfile
-    image: keptey/php-7.2
-    container_name: devapi
+    image: kepteydevapi/php-7.2
+    container_name: devapi.localhost
     restart: unless-stopped
     tty: true
     environment:
-      SERVICE_NAME: devapi
+      SERVICE_NAME: devapi.localhost
       SERVICE_TAGS: dev
     working_dir: /var/www
     volumes:
@@ -43,16 +43,16 @@ services:
       - app-network
 
   #PHP Service
-  stageapi:
+  stageapi.localhost:
     build:
       context: ../api/staging
       dockerfile: Dockerfile
-    image: keptey/php-7.2
-    container_name: stageapi
+    image: kepteystageapi/php-7.2
+    container_name: stageapi.localhost
     restart: unless-stopped
     tty: true
     environment:
-      SERVICE_NAME: stageapi
+      SERVICE_NAME: stageapi.localhost
       SERVICE_TAGS: stage
     working_dir: /var/www/api/staging
     volumes:
@@ -76,13 +76,16 @@ services:
       - "8000:80"
       - "4430:443"
     extra_hosts:
-     - "api.keptey.in:192.168.0.49"
-     - "devapi.keptey.in:192.168.0.49"
-     - "stageapi.keptey.in:192.168.0.49"
+     #- "api.keptey.in:127.0.0.1"
+     #- "devapi.keptey.in:127.0.0.1"
+     #- "stageapi.keptey.in:127.0.0.1"
+      - "api.localhost:127.0.0.1"
+      - "devapi.localhost:127.0.0.1"
+      - "stageapi.localhost:127.0.0.1"
     links:
-        - api
-        - devapi
-        - stageapi
+        - api.localhost
+        - devapi.localhost
+        - stageapi.localhost
     #volumes:
       #- ../api/staging:/var/www/api/staging
       #- ../api/develop:/var/www/api/develop

@@ -1,7 +1,0 @@
-server {
-    listen          80;
-    server_name     devapi.keptey.in www.devapi.keptey.in;
-    location / {
-        proxy_pass  http://devapi:9001/;
-    }
-}
